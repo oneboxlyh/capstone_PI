@@ -1,0 +1,6 @@
+opencv-python
+face-recognition
+numpy
+pillow
+requests
+python-dotenv
