@@ -17,7 +17,7 @@ from libcamera import Transform
 load_dotenv()
 
 # Backend API endpoints
-API_PREFIX = os.getenv("API_PREFIX", "https://q9z46niut5.execute-api.ap-southeast-1.amazonaws.com")
+API_PREFIX = os.getenv("API_PREFIX", "https://q9z46niut5.execute-api.ap-southeast-1.amazonaws.com/api")
 API_FETCH_EMPLOYEES = API_PREFIX + "/employee"
 API_UPLOAD_ACTIVITY = API_PREFIX + "/activity/sync"
 MACHINE_ID = int(os.getenv("MACHINE_ID", 1))
