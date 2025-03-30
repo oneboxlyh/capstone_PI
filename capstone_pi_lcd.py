@@ -67,14 +67,37 @@ def load_employee_data():
     return known_face_ids, known_face_names, known_face_encodings
 
 # Determine status (CHECK IN or CHECK OUT)
-def get_status(emp_id):
+'''def get_status(emp_id):
     today = datetime.datetime.now().strftime("%Y-%m-%d")
     conn = sqlite3.connect("employees.db")
     cursor = conn.cursor()
     cursor.execute("SELECT COUNT(*) FROM attendance WHERE employee_id = ? AND DATE(timestamp) = ?", (emp_id, today))
     count = cursor.fetchone()[0]
     conn.close()
-    return "CHECK IN" if count % 2 == 0 else "CHECK OUT"
+    return "CHECK IN" if count % 2 == 0 else "CHECK OUT"'''
+# Determine status (CHECK IN or CHECK OUT) based on last record from both attendance tables
+def get_status(emp_id):
+    conn = sqlite3.connect("employees.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT status FROM (
+            SELECT status, timestamp FROM attendance WHERE employee_id = ?
+            UNION ALL
+            SELECT status, timestamp FROM attendance_bk WHERE employee_id = ?
+        )
+        ORDER BY timestamp DESC
+        LIMIT 1
+    """, (emp_id, emp_id))
+
+    last_record = cursor.fetchone()
+    conn.close()
+
+    # If no previous record, default to CHECK IN
+    if not last_record:
+        return "CHECK IN"
+
+    return "CHECK OUT" if last_record[0] == "CHECK IN" else "CHECK IN"
 
 # Record attendance locally
 def record_attendance(emp_id, emp_name):
@@ -217,7 +240,7 @@ class FaceRecognitionApp:
                     recognized = True
 
             # Clear label after 2 seconds
-            if self.status_label.cget("text") and time.time() - self.last_recognized_time > 2:
+            if self.status_label.c("text") and time.time() - self.last_recognized_time > 2:
                 self.status_label.config(text="")
 
             # Convert to PIL image and display
