@@ -149,7 +149,7 @@ def upload_and_sync():
     app.reload_face_data()
     recognition_active = True
     print("[UPLOAD] Attendance upload and sync completed.")
-    threading.Timer(600, upload_and_sync).start()
+    threading.Timer(60, upload_and_sync).start()
 
 # GUI Application
 class FaceRecognitionApp:
@@ -292,6 +292,6 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = FaceRecognitionApp(root)
     root.protocol("WM_DELETE_WINDOW", app.on_closing)
-    threading.Timer(600, upload_and_sync).start()
+    threading.Timer(60, upload_and_sync).start()
     print("[MAIN] Face recognition started.")
     root.mainloop()
